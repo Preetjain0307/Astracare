@@ -15,12 +15,13 @@ import { SignOutButton } from '@/app/dashboard/SignOutButton'
 import type { HealthAlertItem } from '@/types'
 
 interface DashboardHeaderProps {
-  firstName: string
+  firstName?: string
   alerts?: HealthAlertItem[]
   onOpenAIChat?: () => void
 }
 
-export function DashboardHeader({ firstName, alerts = [], onOpenAIChat }: DashboardHeaderProps) {
+export function DashboardHeader({ firstName = 'Elena', alerts = [], onOpenAIChat }: DashboardHeaderProps) {
+
   const [showAlertsPopover, setShowAlertsPopover] = useState(false)
 
   const dateStr = new Date().toLocaleDateString('en-US', {

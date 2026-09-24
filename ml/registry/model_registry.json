@@ -1,0 +1,301 @@
+{
+  "system": "ASTRACARE AI Model Registry",
+  "last_updated": "2026-09-24T18:54:48.699165+00:00",
+  "total_active_models": 5,
+  "models": {
+    "pcos_risk": {
+      "model_id": "pcos_risk_v1",
+      "model_name": "PCOS Hormonal Risk Classifier",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "type": "classification",
+      "features": [
+        "age",
+        "bmi",
+        "cycle_length_days",
+        "cycle_regularity",
+        "weight_gain_sudden",
+        "hair_growth_hirsutism",
+        "skin_darkening",
+        "hair_thinning",
+        "pimples_acne",
+        "fast_food_freq",
+        "exercise_regularity"
+      ],
+      "target": "pcos_risk_level",
+      "labels": [
+        "Low Risk",
+        "Moderate Risk",
+        "High Risk"
+      ],
+      "algorithm": "GradientBoosting",
+      "training_dataset": "PCOS Diagnostic and Clinical Dataset",
+      "provenance": "Kaggle Clinical Cohort (Kottayam Medical Study & Synthetic Validated Augmentations)",
+      "license": "CC BY 4.0 / Public Clinical Research Archive",
+      "metrics": {
+        "accuracy": 0.9875,
+        "precision": 0.9881,
+        "recall": 0.9875,
+        "f1_score": 0.9874,
+        "roc_auc": 0.9994,
+        "confusion_matrix": [
+          [
+            39,
+            3,
+            0
+          ],
+          [
+            0,
+            65,
+            0
+          ],
+          [
+            0,
+            0,
+            133
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9722,
+          "GradientBoosting": 0.9722,
+          "ExtraTrees": 0.9612,
+          "LogisticRegression": 0.9382
+        },
+        "selected_algorithm": "GradientBoosting"
+      },
+      "artifact_path": "ml/models\\pcos_risk_v1.joblib",
+      "created_at": "2026-09-24T18:54:51.604276+00:00",
+      "limitations": "Screening risk indicator only. Not a medical ultrasound or biochemical diagnosis.",
+      "data_safety_disclaimer": "Informational health intelligence indicator only. Not a medical diagnostic device."
+    },
+    "cycle_length": {
+      "model_id": "cycle_length_v1",
+      "model_name": "Menstrual Cycle Duration & Phase Predictor",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "type": "regression",
+      "features": [
+        "age",
+        "bmi",
+        "prev_cycle_length",
+        "cycle_variance",
+        "sleep_avg_hours",
+        "stress_score_avg",
+        "activity_intensity_min",
+        "caffeine_intake_mg",
+        "bbt_celsius"
+      ],
+      "target": "predicted_cycle_length_days",
+      "labels": [],
+      "algorithm": "RidgeRegressor",
+      "training_dataset": "FedCycle Longitudinal Women Cycle Dataset",
+      "provenance": "Aggregated Anonymized Natural Cycle Tracking Data",
+      "license": "Open Database License (ODbL)",
+      "metrics": {
+        "mae": 0.6409,
+        "rmse": 0.8021,
+        "r2_score": 0.8921,
+        "candidate_comparison_mae": {
+          "RandomForestRegressor": 0.7239,
+          "GradientBoostingRegressor": 0.6981,
+          "ExtraTreesRegressor": 0.7002,
+          "RidgeRegressor": 0.6634
+        },
+        "selected_algorithm": "RidgeRegressor"
+      },
+      "artifact_path": "ml/models\\cycle_length_v1.joblib",
+      "created_at": "2026-09-24T18:54:53.441175+00:00",
+      "limitations": "Estimated statistical trajectory. Cycle may shift due to acute stress, illness, or travel.",
+      "data_safety_disclaimer": "Informational health intelligence indicator only. Not a medical diagnostic device."
+    },
+    "anemia_risk": {
+      "model_id": "anemia_risk_v1",
+      "model_name": "Anemia & Iron Deficiency Screener",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "type": "classification",
+      "features": [
+        "age",
+        "period_flow_intensity",
+        "fatigue_frequency",
+        "dizziness_frequency",
+        "pale_skin_flag",
+        "cold_hands_feet_flag",
+        "diet_type_code",
+        "shortness_of_breath_flag",
+        "estimated_hemoglobin_gl"
+      ],
+      "target": "anemia_risk_level",
+      "labels": [
+        "Normal",
+        "Mild Risk",
+        "Moderate/Severe Risk"
+      ],
+      "algorithm": "RandomForest",
+      "training_dataset": "Complete Blood Count & Symptom Anemia Cohort",
+      "provenance": "Clinical Hematology Benchmark & Symptom Profiles",
+      "license": "CC0: Public Domain",
+      "metrics": {
+        "accuracy": 0.975,
+        "precision": 0.9757,
+        "recall": 0.975,
+        "f1_score": 0.9749,
+        "roc_auc": 0.9985,
+        "confusion_matrix": [
+          [
+            79,
+            0,
+            0
+          ],
+          [
+            4,
+            138,
+            0
+          ],
+          [
+            0,
+            2,
+            17
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9889,
+          "GradientBoosting": 0.9833,
+          "ExtraTrees": 0.9604,
+          "LogisticRegression": 0.9889
+        },
+        "selected_algorithm": "RandomForest"
+      },
+      "artifact_path": "ml/models\\anemia_risk_v1.joblib",
+      "created_at": "2026-09-24T18:54:55.381088+00:00",
+      "limitations": "Symptom & surrogate screener. Requires CBC laboratory test confirmation.",
+      "data_safety_disclaimer": "Informational health intelligence indicator only. Not a medical diagnostic device."
+    },
+    "diabetes_risk": {
+      "model_id": "diabetes_risk_v1",
+      "model_name": "Metabolic & Gestational Diabetes Risk Classifier",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "type": "classification",
+      "features": [
+        "age",
+        "bmi",
+        "pregnancies_count",
+        "glucose_fasting_mgdl",
+        "blood_pressure_diastolic",
+        "skin_thickness_mm",
+        "insulin_micro_u_ml",
+        "diabetes_pedigree_function",
+        "daily_physical_activity_min"
+      ],
+      "target": "diabetes_risk_level",
+      "labels": [
+        "Low Risk",
+        "Moderate Risk",
+        "High Risk"
+      ],
+      "algorithm": "LogisticRegression",
+      "training_dataset": "Pima & NHANES Female Cardiometabolic Dataset",
+      "provenance": "National Institute of Diabetes and Digestive and Kidney Diseases",
+      "license": "CC BY-SA 4.0 (UCI / Kaggle)",
+      "metrics": {
+        "accuracy": 0.7708,
+        "precision": 0.7712,
+        "recall": 0.7708,
+        "f1_score": 0.7706,
+        "roc_auc": 0.9164,
+        "confusion_matrix": [
+          [
+            32,
+            17,
+            0
+          ],
+          [
+            13,
+            79,
+            12
+          ],
+          [
+            0,
+            13,
+            74
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.7317,
+          "GradientBoosting": 0.7495,
+          "ExtraTrees": 0.71,
+          "LogisticRegression": 0.7952
+        },
+        "selected_algorithm": "LogisticRegression"
+      },
+      "artifact_path": "ml/models\\diabetes_risk_v1.joblib",
+      "created_at": "2026-09-24T18:54:57.933874+00:00",
+      "limitations": "Risk stratification tool. Formal diagnosis requires Oral Glucose Tolerance Test (OGTT) or HbA1c.",
+      "data_safety_disclaimer": "Informational health intelligence indicator only. Not a medical diagnostic device."
+    },
+    "thyroid_risk": {
+      "model_id": "thyroid_risk_v1",
+      "model_name": "Thyroid Dysfunction Screener (Hypo/Hyperthyroid)",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "type": "classification",
+      "features": [
+        "age",
+        "unexplained_weight_change_kg",
+        "temperature_sensitivity",
+        "heart_rate_resting_bpm",
+        "fatigue_level",
+        "hair_loss_severity",
+        "cycle_flow_changes",
+        "mood_anxiety_depression_score",
+        "tsh_level_est"
+      ],
+      "target": "thyroid_risk_level",
+      "labels": [
+        "Euthyroid (Normal)",
+        "Hypothyroid Risk",
+        "Hyperthyroid Risk"
+      ],
+      "algorithm": "GradientBoosting",
+      "training_dataset": "Thyroid Disease Clinical Classification Dataset",
+      "provenance": "Garavan Institute & Synthetic Women Hormonal Benchmarks",
+      "license": "Open Data Commons (UCI / Kaggle)",
+      "metrics": {
+        "accuracy": 0.9958,
+        "precision": 0.9959,
+        "recall": 0.9958,
+        "f1_score": 0.9958,
+        "roc_auc": 1.0,
+        "confusion_matrix": [
+          [
+            175,
+            0,
+            0
+          ],
+          [
+            0,
+            42,
+            0
+          ],
+          [
+            1,
+            0,
+            22
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9827,
+          "GradientBoosting": 0.9944,
+          "ExtraTrees": 0.8751,
+          "LogisticRegression": 0.7838
+        },
+        "selected_algorithm": "GradientBoosting"
+      },
+      "artifact_path": "ml/models\\thyroid_risk_v1.joblib",
+      "created_at": "2026-09-24T18:55:00.149078+00:00",
+      "limitations": "Indicative only. Serum TSH, Free T3, and Free T4 tests are necessary for clinical confirmation.",
+      "data_safety_disclaimer": "Informational health intelligence indicator only. Not a medical diagnostic device."
+    }
+  }
+}

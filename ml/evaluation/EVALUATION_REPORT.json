@@ -1,0 +1,188 @@
+{
+  "title": "AstraCare AI - Predictive ML Clinical Benchmark Evaluation Report",
+  "generated_at": "2026-09-24T18:55:02.462527+00:00",
+  "total_models_evaluated": 5,
+  "evaluation_results": {
+    "pcos_risk": {
+      "model_name": "PCOS Hormonal Risk Classifier",
+      "version": "1.0.0",
+      "algorithm": "GradientBoosting",
+      "metrics": {
+        "accuracy": 0.9875,
+        "precision": 0.9881,
+        "recall": 0.9875,
+        "f1_score": 0.9874,
+        "roc_auc": 0.9994,
+        "confusion_matrix": [
+          [
+            39,
+            3,
+            0
+          ],
+          [
+            0,
+            65,
+            0
+          ],
+          [
+            0,
+            0,
+            133
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9722,
+          "GradientBoosting": 0.9722,
+          "ExtraTrees": 0.9612,
+          "LogisticRegression": 0.9382
+        },
+        "selected_algorithm": "GradientBoosting"
+      },
+      "validation_status": "PASSED_BENCHMARK_CRITERIA",
+      "overfitting_risk": "LOW (Cross-validated on stratified Holdout splits)",
+      "leakage_audit": "PASSED (Separate preprocessor fitted strictly on Train split)",
+      "fairness_and_safety": "Ethically bounded screening indicators with mandatory medical disclaimers."
+    },
+    "cycle_length": {
+      "model_name": "Menstrual Cycle Duration & Phase Predictor",
+      "version": "1.0.0",
+      "algorithm": "RidgeRegressor",
+      "metrics": {
+        "mae": 0.6409,
+        "rmse": 0.8021,
+        "r2_score": 0.8921,
+        "candidate_comparison_mae": {
+          "RandomForestRegressor": 0.7239,
+          "GradientBoostingRegressor": 0.6981,
+          "ExtraTreesRegressor": 0.7002,
+          "RidgeRegressor": 0.6634
+        },
+        "selected_algorithm": "RidgeRegressor"
+      },
+      "validation_status": "PASSED_BENCHMARK_CRITERIA",
+      "overfitting_risk": "LOW (Cross-validated on stratified Holdout splits)",
+      "leakage_audit": "PASSED (Separate preprocessor fitted strictly on Train split)",
+      "fairness_and_safety": "Ethically bounded screening indicators with mandatory medical disclaimers."
+    },
+    "anemia_risk": {
+      "model_name": "Anemia & Iron Deficiency Screener",
+      "version": "1.0.0",
+      "algorithm": "RandomForest",
+      "metrics": {
+        "accuracy": 0.975,
+        "precision": 0.9757,
+        "recall": 0.975,
+        "f1_score": 0.9749,
+        "roc_auc": 0.9985,
+        "confusion_matrix": [
+          [
+            79,
+            0,
+            0
+          ],
+          [
+            4,
+            138,
+            0
+          ],
+          [
+            0,
+            2,
+            17
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9889,
+          "GradientBoosting": 0.9833,
+          "ExtraTrees": 0.9604,
+          "LogisticRegression": 0.9889
+        },
+        "selected_algorithm": "RandomForest"
+      },
+      "validation_status": "PASSED_BENCHMARK_CRITERIA",
+      "overfitting_risk": "LOW (Cross-validated on stratified Holdout splits)",
+      "leakage_audit": "PASSED (Separate preprocessor fitted strictly on Train split)",
+      "fairness_and_safety": "Ethically bounded screening indicators with mandatory medical disclaimers."
+    },
+    "diabetes_risk": {
+      "model_name": "Metabolic & Gestational Diabetes Risk Classifier",
+      "version": "1.0.0",
+      "algorithm": "LogisticRegression",
+      "metrics": {
+        "accuracy": 0.7708,
+        "precision": 0.7712,
+        "recall": 0.7708,
+        "f1_score": 0.7706,
+        "roc_auc": 0.9164,
+        "confusion_matrix": [
+          [
+            32,
+            17,
+            0
+          ],
+          [
+            13,
+            79,
+            12
+          ],
+          [
+            0,
+            13,
+            74
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.7317,
+          "GradientBoosting": 0.7495,
+          "ExtraTrees": 0.71,
+          "LogisticRegression": 0.7952
+        },
+        "selected_algorithm": "LogisticRegression"
+      },
+      "validation_status": "PASSED_BENCHMARK_CRITERIA",
+      "overfitting_risk": "LOW (Cross-validated on stratified Holdout splits)",
+      "leakage_audit": "PASSED (Separate preprocessor fitted strictly on Train split)",
+      "fairness_and_safety": "Ethically bounded screening indicators with mandatory medical disclaimers."
+    },
+    "thyroid_risk": {
+      "model_name": "Thyroid Dysfunction Screener (Hypo/Hyperthyroid)",
+      "version": "1.0.0",
+      "algorithm": "GradientBoosting",
+      "metrics": {
+        "accuracy": 0.9958,
+        "precision": 0.9959,
+        "recall": 0.9958,
+        "f1_score": 0.9958,
+        "roc_auc": 1.0,
+        "confusion_matrix": [
+          [
+            175,
+            0,
+            0
+          ],
+          [
+            0,
+            42,
+            0
+          ],
+          [
+            1,
+            0,
+            22
+          ]
+        ],
+        "candidate_comparison_f1": {
+          "RandomForest": 0.9827,
+          "GradientBoosting": 0.9944,
+          "ExtraTrees": 0.8751,
+          "LogisticRegression": 0.7838
+        },
+        "selected_algorithm": "GradientBoosting"
+      },
+      "validation_status": "PASSED_BENCHMARK_CRITERIA",
+      "overfitting_risk": "LOW (Cross-validated on stratified Holdout splits)",
+      "leakage_audit": "PASSED (Separate preprocessor fitted strictly on Train split)",
+      "fairness_and_safety": "Ethically bounded screening indicators with mandatory medical disclaimers."
+    }
+  }
+}

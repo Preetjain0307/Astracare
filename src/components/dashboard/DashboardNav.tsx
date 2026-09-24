@@ -22,17 +22,21 @@ import {
 export const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/chat', label: 'AI Health Assistant', icon: Sparkles },
-  { href: '/dashboard/cycle', label: 'Cycle & Health', icon: Calendar },
-  { href: '/dashboard/insights', label: 'AI Insights', icon: Brain },
-  { href: '/dashboard/nutrition', label: 'Nutrition', icon: Apple },
-  { href: '/dashboard/fitness', label: 'Fitness', icon: Dumbbell },
+  { href: '/dashboard/cycle', label: 'Cycle & Ovulation', icon: Calendar },
+  { href: '/dashboard/risk-assessment', label: 'AI Risk Predictor', icon: Brain },
+  { href: '/dashboard/health-twin', label: 'Digital Health Twin', icon: Heart },
+  { href: '/dashboard/nutrition', label: 'Nutrition & Hydration', icon: Apple },
+  { href: '/dashboard/fitness', label: 'Fitness & Sleep', icon: Dumbbell },
   { href: '/dashboard/wellness', label: 'Mental Wellness', icon: Smile },
-  { href: '/dashboard/wearables', label: 'Wearables', icon: Watch },
+  { href: '/dashboard/medications', label: 'Medications', icon: Bell },
+  { href: '/dashboard/wearables', label: 'AstraBand & Wearables', icon: Watch },
   { href: '/dashboard/reports', label: 'Health Reports', icon: FileText },
-  { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
+  { href: '/dashboard/doctor', label: "Doctor's Console", icon: Shield },
+  { href: '/dashboard/admin', label: 'Admin Portal', icon: User },
   { href: '/dashboard/emergency', label: 'Emergency / SOS', icon: Shield, isAlert: true },
-  { href: '/settings', label: 'Profile / Settings', icon: User },
+  { href: '/settings', label: 'Profile & Security', icon: User },
 ]
+
 
 interface DashboardNavProps {
   currentTab?: string
