@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import path from "path";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,21 +33,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Attempt python CLI inference
+    // Invoke Python CLI inference
     const scriptPath = path.join(process.cwd(), "ml", "inference", "predict_engine.py");
-    const jsonPayload = JSON.stringify({ domain, features }).replace(/"/g, '\\"');
-    
     let predictionResult: any = null;
 
     try {
-      const pythonCmd = `python -c "import json, sys; from ml.inference.predict_engine import AstraCareInferenceEngine; engine = AstraCareInferenceEngine(); print(json.dumps(engine.predict('${domain}', ${JSON.stringify(features)})))"`;
-      const { stdout } = await execAsync(pythonCmd, { cwd: process.cwd() });
+      const { stdout } = await execFileAsync("python", [
+        scriptPath,
+        domain,
+        JSON.stringify(features),
+      ], { cwd: process.cwd() });
       predictionResult = JSON.parse(stdout.trim());
     } catch (pyErr) {
       console.warn("Python execution fallback triggered:", pyErr);
-      // Resilient fallback risk calculation
       predictionResult = calculateFallbackRisk(domain, features);
     }
+
 
     // Optional: Log risk assessment if user authenticated
     try {

@@ -55,10 +55,8 @@ export async function proxy(request: NextRequest) {
       if (!profile.email_verified && !pathname.startsWith('/auth/verify-email')) {
         return NextResponse.redirect(new URL('/auth/verify-email', request.url))
       }
-      if (profile.email_verified && !profile.phone_verified && !pathname.startsWith('/auth/verify-phone')) {
-        return NextResponse.redirect(new URL('/auth/verify-phone', request.url))
-      }
     }
+
   }
 
   // Redirect fully verified users away from auth pages to dashboard

@@ -147,10 +147,20 @@ class AstraCareInferenceEngine:
 
 if __name__ == "__main__":
     engine = AstraCareInferenceEngine()
-    test_input = {
-        "age": 26, "bmi": 24.2, "cycle_length_days": 32, "cycle_regularity": 0,
-        "weight_gain_sudden": 0, "hair_growth_hirsutism": 0, "skin_darkening": 0,
-        "hair_thinning": 0, "pimples_acne": 1, "fast_food_freq": 1, "exercise_regularity": 1
-    }
-    res = engine.predict("pcos_risk", test_input)
-    print("Inference Test Output:\n", json.dumps(res, indent=2))
+    if len(sys.argv) >= 3:
+        domain_arg = sys.argv[1]
+        try:
+            features_arg = json.loads(sys.argv[2])
+        except Exception:
+            features_arg = {}
+        res = engine.predict(domain_arg, features_arg)
+        print(json.dumps(res))
+    else:
+        test_input = {
+            "age": 26, "bmi": 24.2, "cycle_length_days": 32, "cycle_regularity": 0,
+            "weight_gain_sudden": 0, "hair_growth_hirsutism": 0, "skin_darkening": 0,
+            "hair_thinning": 0, "pimples_acne": 1, "fast_food_freq": 1, "exercise_regularity": 1
+        }
+        res = engine.predict("pcos_risk", test_input)
+        print("Inference Test Output:\n", json.dumps(res, indent=2))
+
