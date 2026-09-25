@@ -18,17 +18,27 @@ export default async function DashboardPage() {
   }
 
   let user: any = null
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase.auth.getUser()
-    user = data.user
-  } catch (e) {
-    console.warn('[Dashboard Supabase Auth Notice]', e)
+  if (demoPersona) {
+    user = {
+      id: demoPersona.id || 'demo-patient-uuid-001',
+      email: demoPersona.email || 'demo.patient@astracare.ai',
+    }
+  } else {
+    try {
+      const supabase = await createClient()
+      const userPromise = supabase.auth.getUser()
+      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: { user: null } }), 1000))
+      const authRes: any = await Promise.race([userPromise, timeoutPromise])
+      user = authRes?.data?.user
+    } catch (e) {
+      console.warn('[Dashboard Supabase Auth Notice]', e)
+    }
   }
 
   if (!user && !demoPersona) {
     redirect('/auth/login')
   }
+
 
   // Preloaded mock fallback data
   const mockProfile = {

@@ -1,22 +1,49 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { AstraCareChatView } from '@/components/chat/AstraCareChatView'
 import { DashboardSidebar, MobileBottomNav } from '@/components/dashboard/DashboardNav'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 
 export default async function AIChatPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const demoCookie = cookieStore.get('astracare_demo_user')?.value
 
-  if (!user) redirect('/auth/login')
+  let demoPersona: any = null
+  if (demoCookie) {
+    try {
+      demoPersona = JSON.parse(demoCookie)
+    } catch {
+      demoPersona = { role: 'patient', fullName: 'Elena Rostova', email: 'demo.patient@astracare.ai' }
+    }
+  }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('first_name')
-    .eq('user_id', user.id)
-    .maybeSingle()
+  let user: any = null
+  let firstName = demoPersona?.fullName ? demoPersona.fullName.split(' ')[0] : 'Elena'
 
-  const firstName = profile?.first_name || user.email?.split('@')[0] || 'there'
+  if (!demoPersona) {
+    try {
+      const supabase = await createClient()
+      const userPromise = supabase.auth.getUser()
+      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: { user: null } }), 1000))
+      const authRes: any = await Promise.race([userPromise, timeoutPromise])
+      user = authRes?.data?.user
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        firstName = profile?.first_name || user.email?.split('@')[0] || 'there'
+      }
+    } catch (e) {
+      console.warn('[Chat Supabase Auth Notice]', e)
+    }
+  }
+
+  if (!user && !demoPersona) redirect('/auth/login')
+
 
   return (
     <div className="min-h-screen gradient-mesh flex text-slate-800 pb-20 md:pb-8">

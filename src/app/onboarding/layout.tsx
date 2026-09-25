@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { ProgressIndicator } from '@/components/onboarding/ProgressIndicator'
 import { ONBOARDING_STEPS } from '@/lib/utils'
@@ -9,18 +10,50 @@ export default async function OnboardingLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const demoCookie = cookieStore.get('astracare_demo_user')?.value
 
-  if (!user) redirect('/auth/login')
+  let demoPersona: any = null
+  if (demoCookie) {
+    try {
+      demoPersona = JSON.parse(demoCookie)
+    } catch {
+      demoPersona = { role: 'patient', fullName: 'Elena Rostova', email: 'demo.patient@astracare.ai' }
+    }
+  }
 
-  const { data: questionnaire } = await supabase
-    .from('health_questionnaire')
-    .select('current_step, completed')
-    .eq('user_id', user.id)
-    .maybeSingle()
+  let user: any = null
+  let currentStep = 1
+  let questionnaire: any = { completed: false, current_step: 1 }
 
-  const currentStep = questionnaire?.current_step ?? 1
+  if (demoPersona) {
+    user = { id: demoPersona.id || 'demo-patient-uuid-001', email: demoPersona.email }
+  } else {
+    try {
+      const supabase = await createClient()
+      const userPromise = supabase.auth.getUser()
+      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: { user: null } }), 1000))
+      const authRes: any = await Promise.race([userPromise, timeoutPromise])
+      user = authRes?.data?.user
+
+      if (user) {
+        const { data: qData } = await supabase
+          .from('health_questionnaire')
+          .select('current_step, completed')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        if (qData) {
+          questionnaire = qData
+          currentStep = qData.current_step ?? 1
+        }
+      }
+    } catch (e) {
+      console.warn('[Onboarding Supabase Auth Notice]', e)
+    }
+  }
+
+  if (!user && !demoPersona) redirect('/auth/login')
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-pink-50/40 to-rose-50/60 font-sans text-slate-800">

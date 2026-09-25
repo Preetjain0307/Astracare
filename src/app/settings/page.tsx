@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, User, Shield, Bell } from 'lucide-react'
@@ -7,17 +8,61 @@ import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
+  const cookieStore = await cookies()
+  const demoCookie = cookieStore.get('astracare_demo_user')?.value
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
+  let demoPersona: any = null
+  if (demoCookie) {
+    try {
+      demoPersona = JSON.parse(demoCookie)
+    } catch {
+      demoPersona = { role: 'patient', fullName: 'Elena Rostova', email: 'demo.patient@astracare.ai' }
+    }
+  }
 
-  const authProvider = user.app_metadata?.provider ?? 'email'
+  let user: any = null
+  let profile: any = {
+    first_name: demoPersona?.fullName ? demoPersona.fullName.split(' ')[0] : 'Elena',
+    last_name: demoPersona?.fullName ? demoPersona.fullName.split(' ').slice(1).join(' ') : 'Rostova',
+    phone: '+1 (555) 234-5678',
+    date_of_birth: '1998-05-14',
+    location: 'San Francisco, CA',
+    onboarding_completed: true,
+  }
+
+  if (demoPersona) {
+    user = {
+      id: demoPersona.id || 'demo-patient-uuid-001',
+      email: demoPersona.email || 'demo.patient@astracare.ai',
+      created_at: '2026-01-15T00:00:00.000Z',
+      email_confirmed_at: '2026-01-15T00:00:00.000Z',
+      app_metadata: { provider: 'demo_mock' },
+    }
+  } else {
+    try {
+      const supabase = await createClient()
+      const userPromise = supabase.auth.getUser()
+      const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ data: { user: null } }), 1000))
+      const authRes: any = await Promise.race([userPromise, timeoutPromise])
+      user = authRes?.data?.user
+
+      if (user) {
+        const { data: dbProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        if (dbProfile) profile = dbProfile
+      }
+    } catch (e) {
+      console.warn('[Settings Supabase Auth Notice]', e)
+    }
+  }
+
+  if (!user && !demoPersona) redirect('/auth/login')
+
+  const authProvider = user?.app_metadata?.provider ?? 'email'
+
 
   return (
     <div className="min-h-screen bg-slate-50">
