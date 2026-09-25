@@ -57,22 +57,6 @@ export default async function DashboardPage() {
     thyroid_diagnosed: false,
   }
 
-  const mockCheckIn = {
-    id: 'demo-checkin-1',
-    user_id: user?.id || 'demo-user-id',
-    date: new Date().toISOString().split('T')[0],
-    mood: '😊',
-    mood_score: 8,
-    sleep_quality: 'good',
-    sleep_duration_hours: 7.6,
-    energy_level: 'high',
-    stress_level: 3,
-    water_intake_ml: 1750,
-    flow_intensity: 'none',
-    symptoms: ['Mild Cramps', 'High Energy'],
-    notes: 'Feeling productive and energetic today in follicular phase.',
-  }
-
   const defaultGoals = [
     'period_tracking',
     'pcos_hormonal_health',
@@ -81,10 +65,10 @@ export default async function DashboardPage() {
     'fitness_exercise',
   ]
 
-  let profile = mockProfile
-  let questionnaire = mockQuestionnaire
+  let profile: any = mockProfile
+  let questionnaire: any = mockQuestionnaire
   let healthGoals = { selected_goals: defaultGoals }
-  let todayCheckIn = mockCheckIn
+  let todayCheckIn: any = null
 
   if (user) {
     try {
@@ -100,16 +84,16 @@ export default async function DashboardPage() {
       const dbCheckIn = await getTodayDailyCheckIn(user.id)
       if (dbCheckIn) todayCheckIn = dbCheckIn
     } catch {
-      // Use rich mock data on query fallback
+      // Fallback
     }
   }
 
   return (
     <DashboardClientView
       userEmail={user?.email || demoPersona?.email || 'demo.patient@astracare.ai'}
-      profile={profile as any}
-      questionnaire={questionnaire as any}
-      todayCheckIn={todayCheckIn as any}
+      profile={profile}
+      questionnaire={questionnaire}
+      todayCheckIn={todayCheckIn}
       selectedGoals={healthGoals?.selected_goals || defaultGoals}
     />
   )

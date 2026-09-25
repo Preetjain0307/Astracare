@@ -33,6 +33,9 @@ export async function proxy(request: NextRequest) {
   const protectedRoutes = ['/dashboard', '/onboarding', '/settings']
   const authRoutes = ['/auth/login', '/auth/register']
 
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
+
   const demoCookie = request.cookies.get('astracare_demo_user')?.value
   const isAuthenticated = !!user || !!demoCookie
 
@@ -43,14 +46,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Redirect fully verified users away from auth pages to dashboard
+  // Redirect authenticated users away from auth pages to dashboard
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-
-  // Verification checks for logged-in users on protected routes
-  if (isProtectedRoute && user) {
+  // Verification checks for logged-in Supabase users on protected routes
+  if (isProtectedRoute && user && !demoCookie) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('email_verified, phone_verified, fully_verified')
@@ -62,12 +64,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/auth/verify-email', request.url))
       }
     }
-
-  }
-
-  // Redirect fully verified users away from auth pages to dashboard
-  if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
