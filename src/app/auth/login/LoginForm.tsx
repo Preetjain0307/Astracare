@@ -5,7 +5,20 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, Heart, ShieldCheck } from 'lucide-react'
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ArrowRight,
+  Sparkles,
+  Heart,
+  ShieldCheck,
+  User,
+  Stethoscope,
+  Shield,
+  Zap,
+} from 'lucide-react'
 import { loginSchema, type LoginFormData } from '@/lib/validation/auth'
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton'
 import { OTPInput } from '@/components/auth/OTPInput'
@@ -25,6 +38,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [authError, setAuthError] = useState<string | null>(null)
+  const [demoLoadingRole, setDemoLoadingRole] = useState<string | null>(null)
 
   // Email OTP state
   const [emailOtpStep, setEmailOtpStep] = useState<'email' | 'otp'>('email')
@@ -141,6 +155,34 @@ export function LoginForm() {
     })
   }
 
+  // 4. One-Click Instant Mock Demo Login
+  const handleDemoLogin = async (role: 'patient' | 'doctor' | 'admin') => {
+    setDemoLoadingRole(role)
+    setAuthError(null)
+
+    try {
+      const res = await fetch('/api/auth/demo-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || data.error) {
+        setAuthError(data.error || 'Failed to initialize demo login.')
+        setDemoLoadingRole(null)
+        return
+      }
+
+      router.push(data.redirectTo || '/dashboard')
+      router.refresh()
+    } catch {
+      setAuthError('Network error during demo initialization.')
+      setDemoLoadingRole(null)
+    }
+  }
+
   return (
     <div className="min-h-screen gradient-mesh flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Ambient background glows */}
@@ -149,27 +191,85 @@ export function LoginForm() {
 
       <div className="w-full max-w-md relative z-10 animate-fade-up">
         {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-rose-800 mb-4 shadow-glow text-white">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-rose-800 mb-3 shadow-glow text-white">
             <Heart className="w-6 h-6 fill-white" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Welcome back</h1>
-          <p className="text-sm text-slate-500 mt-1">Sign in to your AstraCare AI account</p>
+          <p className="text-sm text-slate-500 mt-0.5">Sign in to your AstraCare AI account</p>
         </div>
 
         {/* Card */}
-        <div className="glass-card rounded-3xl p-8 border border-rose-100 shadow-glow">
+        <div className="glass-card rounded-3xl p-6 sm:p-8 border border-rose-100 shadow-glow space-y-5">
           {/* Callback Error */}
           {callbackError && (
-            <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-700">
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-700">
               Authentication failed. Please try again.
             </div>
           )}
 
+          {/* ⚡ ONE-CLICK INSTANT DEMO LOGIN PANEL */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-purple-500/10 border border-rose-200/80 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-rose-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-rose-600 fill-rose-600" />
+                Instant Demo Access (Mock Data)
+              </span>
+              <span className="text-[10px] font-bold text-slate-500 bg-white/80 px-2 py-0.5 rounded-full border border-rose-100">
+                1-Click
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleDemoLogin('patient')}
+                disabled={!!demoLoadingRole || isPending}
+                className="p-2.5 rounded-xl bg-white hover:bg-rose-50 border border-rose-200/80 text-center transition-all cursor-pointer shadow-xs hover:border-rose-400 group disabled:opacity-50"
+              >
+                <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform">
+                  <User className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-extrabold text-slate-800 block leading-tight">Patient</span>
+                <span className="text-[9px] text-slate-500 block">Elena (Age 26)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDemoLogin('doctor')}
+                disabled={!!demoLoadingRole || isPending}
+                className="p-2.5 rounded-xl bg-white hover:bg-teal-50 border border-teal-200/80 text-center transition-all cursor-pointer shadow-xs hover:border-teal-400 group disabled:opacity-50"
+              >
+                <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform">
+                  <Stethoscope className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-extrabold text-slate-800 block leading-tight">Doctor</span>
+                <span className="text-[9px] text-slate-500 block">Dr. Sarah (MD)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDemoLogin('admin')}
+                disabled={!!demoLoadingRole || isPending}
+                className="p-2.5 rounded-xl bg-white hover:bg-purple-50 border border-purple-200/80 text-center transition-all cursor-pointer shadow-xs hover:border-purple-400 group disabled:opacity-50"
+              >
+                <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] font-extrabold text-slate-800 block leading-tight">Admin</span>
+                <span className="text-[9px] text-slate-500 block">ML Registry</span>
+              </button>
+            </div>
+            {demoLoadingRole && (
+              <p className="text-[11px] text-rose-600 font-bold text-center animate-pulse">
+                Initializing {demoLoadingRole.toUpperCase()} demo session with live health metrics...
+              </p>
+            )}
+          </div>
+
+          <Separator label="or sign in with standard account" className="my-2" />
+
           {/* Google OAuth */}
           <GoogleAuthButton mode="signin" />
-
-          <Separator label="or sign in with email" className="my-5" />
 
           {/* Mode Switch: Password vs OTP */}
           <div className="flex items-center justify-between text-xs border-b border-slate-100 pb-3 mb-4">
