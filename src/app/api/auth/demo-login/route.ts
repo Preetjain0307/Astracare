@@ -32,11 +32,10 @@ export async function POST(request: Request) {
     const targetRole = (role in DEMO_ACCOUNTS ? role : 'patient') as keyof typeof DEMO_ACCOUNTS
     const demoUser = DEMO_ACCOUNTS[targetRole]
 
-    const supabaseAdmin = createAdminClient()
+    let userId = 'demo-mock-user-id'
 
-    // Ensure demo user exists in Supabase Auth
-    let userId: string
     try {
+      const supabaseAdmin = createAdminClient()
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: demoUser.email,
         password: demoUser.password,
@@ -51,38 +50,14 @@ export async function POST(request: Request) {
       if (newUser?.user) {
         userId = newUser.user.id
       } else if (createError && createError.message.includes('already registered')) {
-        // Find existing user id
         const { data: listData } = await supabaseAdmin.auth.admin.listUsers()
-        const existing = listData.users.find((u) => u.email === demoUser.email)
-        userId = existing ? existing.id : 'demo-mock-user-id'
-      } else {
-        userId = 'demo-mock-user-id'
+        const existing = listData?.users?.find((u) => u.email === demoUser.email)
+        if (existing) userId = existing.id
       }
-    } catch {
-      userId = 'demo-mock-user-id'
-    }
-
-    // Upsert demo profile
-    try {
-      const nameParts = demoUser.fullName.split(' ')
-      await supabaseAdmin.from('profiles').upsert(
-        {
-          user_id: userId,
-          first_name: nameParts[0],
-          last_name: nameParts.slice(1).join(' ') || '',
-          email_verified: true,
-          phone_verified: true,
-          fully_verified: true,
-          onboarding_completed: true,
-          role: demoUser.role,
-        },
-        { onConflict: 'user_id' }
-      )
     } catch (e) {
-      console.warn('[Demo Profile Upsert Skipped]', e)
+      console.warn('[Demo Admin Client Notice]', e)
     }
 
-    // Attempt standard sign in to set cookies
     try {
       const supabaseServer = await createClient()
       await supabaseServer.auth.signInWithPassword({
@@ -90,10 +65,10 @@ export async function POST(request: Request) {
         password: demoUser.password,
       })
     } catch (authErr) {
-      console.warn('[Demo SignIn Session Warning]', authErr)
+      console.warn('[Demo Server Sign-in Notice]', authErr)
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         id: userId,
@@ -105,8 +80,23 @@ export async function POST(request: Request) {
         onboardingCompleted: true,
       },
       redirectTo: demoUser.redirectTo,
-      message: `Logged in as ${demoUser.fullName} (${demoUser.role.toUpperCase()}) with preloaded clinical data.`,
+      message: `Logged in as ${demoUser.fullName} (${demoUser.role.toUpperCase()}) with preloaded mock clinical data.`,
     })
+
+    // Set demo authentication cookie for reliable session persistence
+    response.cookies.set('astracare_demo_user', JSON.stringify({
+      id: userId,
+      email: demoUser.email,
+      fullName: demoUser.fullName,
+      role: demoUser.role,
+    }), {
+      path: '/',
+      httpOnly: false,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      sameSite: 'lax',
+    })
+
+    return response
   } catch (error: any) {
     return NextResponse.json(
       { error: 'Failed to initialize demo session', details: error?.message },

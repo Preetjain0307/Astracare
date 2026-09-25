@@ -11,12 +11,16 @@ export function SignOutButton() {
 
   const handleSignOut = () => {
     startTransition(async () => {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      router.push('/auth/login')
-      router.refresh()
+      try {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+      } catch {}
+      // Clear demo cookie
+      document.cookie = 'astracare_demo_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;'
+      window.location.href = '/auth/login'
     })
   }
+
 
   return (
     <button

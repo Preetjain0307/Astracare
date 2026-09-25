@@ -175,13 +175,14 @@ export function LoginForm() {
         return
       }
 
-      router.push(data.redirectTo || '/dashboard')
-      router.refresh()
+      // Hard redirect to ensure cookies are read by middleware and server components
+      window.location.href = data.redirectTo || '/dashboard'
     } catch {
       setAuthError('Network error during demo initialization.')
       setDemoLoadingRole(null)
     }
   }
+
 
   return (
     <div className="min-h-screen gradient-mesh flex flex-col items-center justify-center p-4 relative overflow-hidden">

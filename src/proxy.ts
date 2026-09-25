@@ -33,15 +33,21 @@ export async function proxy(request: NextRequest) {
   const protectedRoutes = ['/dashboard', '/onboarding', '/settings']
   const authRoutes = ['/auth/login', '/auth/register']
 
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
+  const demoCookie = request.cookies.get('astracare_demo_user')?.value
+  const isAuthenticated = !!user || !!demoCookie
 
   // Redirect unauthenticated users trying to access protected routes
-  if (isProtectedRoute && !user) {
+  if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL('/auth/login', request.url)
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
   }
+
+  // Redirect fully verified users away from auth pages to dashboard
+  if (isAuthRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
 
   // Verification checks for logged-in users on protected routes
   if (isProtectedRoute && user) {
